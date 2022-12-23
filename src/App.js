@@ -7,25 +7,15 @@ import React, {
 import './App.css'
 import axios from 'axios';
 import { Typography, TextField, Button, CircularProgress, IconButton } from '@mui/material';
-import { NODE_URL, DEFAULT_PROFILE_IMAGE, Logo } from './utils/Constants';
-import { useParams, useNavigate } from "react-router-dom";
+import { NODE_URL, DEFAULT_PROFILE_IMAGE } from './utils/Constants';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
-import { auth, provider } from './utils/firebase';
-import { useAuth } from './contexts/AuthContext';
-
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
 
 // url that I'm testing on (pinnochio): https://www.youtube.com/watch?v=Z4ArXSwALDU
 
 export default function Comments() {
-
-  // Firebase login
-  const { login, currentUser } = useAuth();
 
   // Router stuff
   // let params = useParams();
@@ -43,7 +33,6 @@ export default function Comments() {
   const [newReply, setNewReply] = useState("");
   const [likes, setLikes] = useState({});
   const [replyLikes, setReplyLikes] = useState({});
-  const [search, setSearch] = useState("");
   const [url, setUrl] = useState();
   const [isYoutube, setIsYoutube] = useState(true);
   const [loadedUrl, setLoadedUrl] = useState(false);
@@ -53,28 +42,6 @@ export default function Comments() {
     let temp = {};
     temp[id] = !temp[id];
     setShowAddReply(temp);
-  }
-
-  // Submits a comment
-  function submitComment() {
-    axios.post(NODE_URL + '/postComment', {
-      content: newComment,
-      youtube_url: url,
-      user_id: currentUser.uid
-    }).then(
-      function (value) {
-        if (value.data.errno) {
-          console.log(value.data);
-          alert("There was a problem contacting the database");
-          return;
-        }
-        setNewComment("");
-        fetchComments();
-      },
-      function (error) {
-        alert(error + "\nThere was a problem contacting the server");
-      }
-    )
   }
 
   // Fetches comments from db, hopefully this is the right way to use useCallback
@@ -104,37 +71,13 @@ export default function Comments() {
     )
   }, [url]);
 
-  // Submits a reply for comment with specified id
-  function submitReply(id) {
-    axios.post(NODE_URL + '/postReply', {
-      content: newReply,
-      user_id: currentUser.uid,
-      response_id: id,
-    }).then(
-      function (value) {
-        if (value.data.errno) {
-          console.log(value.data);
-          alert("There was a problem contacting the database");
-          return;
-        }
-        setNewReply("");
-        fetchComments();
-        showRepliesTrue(id);
-        setShowAddReply([]);
-      },
-      function (error) {
-        alert(error + "\nThere was a problem contacting the server");
-      }
-    )
-  }
-
   // This is bad style. But need one that just goes to true
-  function showRepliesTrue(id) {
-    let temp = { ...showReplies };
-    temp[id] = true;
-    setShowReplies(temp);
-    fetchReplies(id);
-  }
+  // function showRepliesTrue(id) {
+  //   let temp = { ...showReplies };
+  //   temp[id] = true;
+  //   setShowReplies(temp);
+  //   fetchReplies(id);
+  // }
 
   // Fetches replies for a specified comment id
   function fetchReplies(id) {
@@ -167,33 +110,6 @@ export default function Comments() {
     temp[id] = !temp[id];
     setShowReplies(temp);
     fetchReplies(id);
-  }
-
-  // Do the auth popup (maybe do redirect?) and then set all the state stuff
-  function signIn() {
-    console.log('trying to log in');
-    // login(auth, provider).then((result) => {
-    //   console.log(result)
-    //   setShowCommentButton(true);
-
-    //   // Update user info in database
-    //   axios.post(NODE_URL + '/updateUser', {
-    //     id: result.user.uid,
-    //     user_image: result.user.photoURL,
-    //     user_name: result.user.displayName
-    //   }).then(
-    //     function (value) { // seems like there should be a better method since I'm doing this same thing after every axios call...
-    //       if (value.data.errno) {
-    //         console.log(value.data);
-    //         alert("There was a problem contacting the database");
-    //         return;
-    //       }
-    //     },
-    //     function (error) {
-    //       alert(error + "\nThere was a problem contacting the server");
-    //     }
-    //   )
-    // })
   }
 
   // Fetch info for id on load
@@ -270,12 +186,7 @@ export default function Comments() {
     <div className="comments-container">
       <div className="add-comment-container">
         <div className="user-icon">
-          {
-            currentUser ?
-              <img src={currentUser.photoURL} referrerPolicy="no-referrer" alt="user icon" style={{ width: '100%' }} />
-              :
-              <img src={DEFAULT_PROFILE_IMAGE} referrerPolicy="no-referrer" alt="user icon" style={{ width: '100%' }} />
-          }
+          <img src={DEFAULT_PROFILE_IMAGE} referrerPolicy="no-referrer" alt="user icon" style={{ width: '100%' }} />
         </div>
         <a href={"https://www.youztube.xyz/" + url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'inherit', color: 'inherit', width: '100%', display: 'flex' }}>
           <TextField
@@ -284,13 +195,13 @@ export default function Comments() {
             sx={{ flexGrow: 1 }}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            onClick={!currentUser ? signIn : () => setShowCommentButton(true)}
+            onClick={null}
           />
         </a>
       </div>
       <div className="add-comment-buttons" style={{ display: `${showCommentButton ? '' : 'none'}` }}>
         <Button sx={{ color: 'gray' }} onClick={() => { setShowCommentButton(false); setNewComment(""); }}>Cancel</Button>
-        <Button variant="contained" disabled={!Boolean(newComment)} onClick={submitComment}>Comment</Button>
+        <Button variant="contained" disabled={!Boolean(newComment)} onClick={null}>Comment</Button>
       </div>
       <div>
         {
@@ -336,7 +247,7 @@ export default function Comments() {
                                 <div className="add-reply-container">
                                   <div className="user-icon but-smaller">
                                     {/* {userDetails[0].username.charAt(0).toUpperCase()} */}
-                                    <img src={currentUser.photoURL} referrerPolicy="no-referrer" alt="user icon" style={{ width: '100%' }} />
+                                    <img src={DEFAULT_PROFILE_IMAGE} referrerPolicy="no-referrer" alt="user icon" style={{ width: '100%' }} />
                                   </div>
                                   <TextField
                                     autoFocus
@@ -348,7 +259,9 @@ export default function Comments() {
                                 </div>
                                 <div className="add-reply-buttons" style={{ display: `${showAddReply ? '' : 'none'}` }}>
                                   <Button sx={{ color: 'gray' }} onClick={() => { setShowAddReply([]); setNewReply(""); }}>Cancel</Button>
-                                  <Button variant="contained" disabled={!Boolean(newReply)} onClick={() => submitReply(entry.id)}>Reply</Button>
+                                  <a href={"https://www.youztube.xyz/" + url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'inherit', color: 'inherit', display: 'flex' }}>
+                                    <Button variant="contained" disabled={!Boolean(newReply)} onClick={null}>Reply</Button>
+                                  </a>
                                 </div>
                               </>
                               :
