@@ -1,3 +1,5 @@
+That's goofy I don't usually get this because i use cra in a sub-directory 🤪
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
