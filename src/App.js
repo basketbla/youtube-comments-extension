@@ -7,7 +7,7 @@ import React, {
 import './App.css'
 import axios from 'axios';
 import { Typography, TextField, Button, CircularProgress, IconButton } from '@mui/material';
-import { NODE_URL, DEFAULT_PROFILE_IMAGE } from './utils/Constants';
+import { NODE_URL, DEFAULT_PROFILE_IMAGE, COMMENTS_URL } from './utils/Constants';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
@@ -188,7 +188,7 @@ export default function Comments() {
         <div className="user-icon">
           <img src={DEFAULT_PROFILE_IMAGE} referrerPolicy="no-referrer" alt="user icon" style={{ width: '100%' }} />
         </div>
-        <a href={"https://www.youztube.xyz/" + url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'inherit', color: 'inherit', width: '100%', display: 'flex' }}>
+        <a href={COMMENTS_URL + url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'inherit', color: 'inherit', width: '100%', display: 'flex' }}>
           <TextField
             placeholder="Add a public comment..."
             variant="standard"
@@ -259,7 +259,7 @@ export default function Comments() {
                                 </div>
                                 <div className="add-reply-buttons" style={{ display: `${showAddReply ? '' : 'none'}` }}>
                                   <Button sx={{ color: 'gray' }} onClick={() => { setShowAddReply([]); setNewReply(""); }}>Cancel</Button>
-                                  <a href={"https://www.youztube.xyz/" + url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'inherit', color: 'inherit', display: 'flex' }}>
+                                  <a href={COMMENTS_URL + url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'inherit', color: 'inherit', display: 'flex' }}>
                                     <Button variant="contained" disabled={!Boolean(newReply)} onClick={null}>Reply</Button>
                                   </a>
                                 </div>
